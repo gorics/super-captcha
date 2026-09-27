@@ -1,0 +1,129 @@
+name: MaleCNS whole fly brain run
+
+on:
+  push:
+    branches: [flybrain-wholebrain-run-20260927]
+    paths:
+      - '.github/workflows/flybrain-wholebrain.yml'
+  workflow_dispatch:
+
+jobs:
+  whole-brain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install upstream open-source simulator
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install 'flybrain==0.1.0'
+
+      - name: Download and run complete MaleCNS v1.0 connectome
+        env:
+          FLY_DATA: ${{ runner.temp }}/fly-data
+          NUMBA_NUM_THREADS: '2'
+          OMP_NUM_THREADS: '2'
+        run: |
+          cat > /tmp/run_flybrain.py <<'PY'
+          import hashlib, json, os
+          from collections import Counter
+          from pathlib import Path
+          import numpy as np
+          from flybrain import FlyBrain
+          from flybrain.data import DATA, FILES
+
+          print('=== OPEN-SOURCE WHOLE FLY BRAIN ===', flush=True)
+          print('package=flybrain==0.1.0', flush=True)
+          print('connectome=MaleCNS v1.0', flush=True)
+          print('data_dir=', DATA, flush=True)
+
+          # This constructor downloads the upstream prebuilt MaleCNS matrices and
+          # verifies the SHA-256 digests defined by flybrain itself.
+          brain = FlyBrain(device='cpu', seed=64, sensory_input=True)
+
+          checksums = {}
+          for name, expected in FILES.items():
+              p = Path(DATA) / name
+              h = hashlib.sha256()
+              with p.open('rb') as f:
+                  for chunk in iter(lambda: f.read(1024 * 1024), b''):
+                      h.update(chunk)
+              actual = h.hexdigest()
+              checksums[name] = {'actual': actual, 'expected': expected, 'match': actual == expected, 'bytes': p.stat().st_size}
+              print(f'DATA {name} bytes={p.stat().st_size} sha256={actual} match={actual == expected}', flush=True)
+
+          neurons = int(brain.n)
+          connections = int(len(brain.weights))
+          print(f'GRAPH neurons={neurons} connections={connections}', flush=True)
+
+          # Use the fly's own annotated visual projection neurons as input and
+          # its own DNp01 descending escape neuron as a biological readout.
+          drive = brain.cells(['LC4', 'LPLC2'], side='L')
+          dnp01 = brain.cells(['DNp01'], side='L')
+          drive_set = set(map(int, drive))
+          dnp01_set = set(map(int, dnp01))
+          print(f'INPUT LC4+LPLC2 left neurons={len(drive)}', flush=True)
+          print(f'READOUT DNp01 left neurons={len(dnp01)}', flush=True)
+
+          def run_trial(stimulated: bool):
+              brain.reset(seed=64)
+              counts = Counter()
+              total = downstream = driven = 0
+              dnp01_steps = []
+              first_downstream = None
+              for step in range(50):  # 50 * 20 ms = 1.0 simulated second
+                  inject = [(drive, 0.8)] if stimulated else ()
+                  fired = [int(x) for x in brain.step(inject=inject)]
+                  total += len(fired)
+                  counts.update(fired)
+                  ds = [x for x in fired if x not in drive_set]
+                  downstream += len(ds)
+                  driven += sum(x in drive_set for x in fired)
+                  if ds and first_downstream is None:
+                      first_downstream = {'step': step, 'time_s': (step + 1) * brain.dt, 'indices': ds[:20]}
+                  if dnp01_set.intersection(fired):
+                      dnp01_steps.append(step)
+              return {
+                  'total_spikes': total,
+                  'driven_population_spikes': driven,
+                  'downstream_spikes': downstream,
+                  'active_neurons': len(counts),
+                  'dnp01_spike_steps': dnp01_steps,
+                  'first_downstream': first_downstream,
+                  'top_active_indices': counts.most_common(20),
+              }
+
+          baseline = run_trial(False)
+          stimulated = run_trial(True)
+          result = {
+              'simulator': 'flybrain 0.1.0',
+              'connectome': 'MaleCNS v1.0',
+              'neurons': neurons,
+              'connections': connections,
+              'dt_seconds': float(brain.dt),
+              'steps': 50,
+              'duration_seconds': 50 * float(brain.dt),
+              'sensory_input_preserved': True,
+              'input': {'types': ['LC4','LPLC2'], 'side': 'L', 'neurons': len(drive), 'amount_per_step': 0.8},
+              'readout': {'type': 'DNp01', 'side': 'L', 'neurons': len(dnp01)},
+              'checksums': checksums,
+              'baseline': baseline,
+              'stimulated': stimulated,
+          }
+          print('FLYBRAIN_RESULT=' + json.dumps(result, sort_keys=True), flush=True)
+          Path('flybrain-result.json').write_text(json.dumps(result, indent=2), encoding='utf-8')
+          PY
+          python /tmp/run_flybrain.py
+
+      - name: Upload exact run result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flybrain-wholebrain-result
+          path: flybrain-result.json
+          if-no-files-found: warn
+          retention-days: 1
