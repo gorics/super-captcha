@@ -1,3 +1,4 @@
+# trigger: 2026-09-27 whole-brain run
 name: MaleCNS whole fly brain run
 
 on:
@@ -29,10 +30,9 @@ jobs:
           OMP_NUM_THREADS: '2'
         run: |
           cat > /tmp/run_flybrain.py <<'PY'
-          import hashlib, json, os
+          import hashlib, json
           from collections import Counter
           from pathlib import Path
-          import numpy as np
           from flybrain import FlyBrain
           from flybrain.data import DATA, FILES
 
@@ -40,9 +40,6 @@ jobs:
           print('package=flybrain==0.1.0', flush=True)
           print('connectome=MaleCNS v1.0', flush=True)
           print('data_dir=', DATA, flush=True)
-
-          # This constructor downloads the upstream prebuilt MaleCNS matrices and
-          # verifies the SHA-256 digests defined by flybrain itself.
           brain = FlyBrain(device='cpu', seed=64, sensory_input=True)
 
           checksums = {}
@@ -60,8 +57,6 @@ jobs:
           connections = int(len(brain.weights))
           print(f'GRAPH neurons={neurons} connections={connections}', flush=True)
 
-          # Use the fly's own annotated visual projection neurons as input and
-          # its own DNp01 descending escape neuron as a biological readout.
           drive = brain.cells(['LC4', 'LPLC2'], side='L')
           dnp01 = brain.cells(['DNp01'], side='L')
           drive_set = set(map(int, drive))
@@ -75,7 +70,7 @@ jobs:
               total = downstream = driven = 0
               dnp01_steps = []
               first_downstream = None
-              for step in range(50):  # 50 * 20 ms = 1.0 simulated second
+              for step in range(50):
                   inject = [(drive, 0.8)] if stimulated else ()
                   fired = [int(x) for x in brain.step(inject=inject)]
                   total += len(fired)
