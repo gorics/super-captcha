@@ -1,4 +1,4 @@
-# trigger: 2026-09-27 whole-brain run
+# trigger: 2026-09-27 whole-brain local-transfer run
 name: MaleCNS whole fly brain run
 
 on:
@@ -114,6 +114,19 @@ jobs:
           PY
           python /tmp/run_flybrain.py
 
+      - name: Build local-transfer bundle with exact upstream files
+        env:
+          FLY_DATA: ${{ runner.temp }}/fly-data
+        run: |
+          set -euo pipefail
+          mkdir -p flybrain-local-bundle
+          cp "$FLY_DATA/brain.npz" flybrain-local-bundle/
+          cp "$FLY_DATA/weights.npz" flybrain-local-bundle/
+          cp flybrain-result.json flybrain-local-bundle/
+          python -m pip download --no-deps 'flybrain==0.1.0' -d flybrain-local-bundle
+          sha256sum flybrain-local-bundle/* | tee flybrain-local-bundle/SHA256SUMS.txt
+          ls -lh flybrain-local-bundle
+
       - name: Upload exact run result
         if: always()
         uses: actions/upload-artifact@v4
@@ -121,4 +134,12 @@ jobs:
           name: flybrain-wholebrain-result
           path: flybrain-result.json
           if-no-files-found: warn
+          retention-days: 1
+
+      - name: Upload complete local-transfer bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: flybrain-local-bundle
+          path: flybrain-local-bundle/
+          compression-level: 0
           retention-days: 1
