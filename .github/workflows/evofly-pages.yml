@@ -1,11 +1,6 @@
 name: Deploy EvoFly Live
 
 on:
-  push:
-    branches: [evofly-ci]
-    paths:
-      - 'docs/evofly-live/**'
-      - '.github/workflows/evofly-pages.yml'
   workflow_dispatch:
 
 permissions:
