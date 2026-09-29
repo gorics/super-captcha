@@ -124,7 +124,36 @@ jobs:
           },indent=2))
           PY
 
-      - name: Persist the surviving genome for the next generation
+      - name: Build live observer snapshot
+        shell: bash
+        run: |
+          set -euxo pipefail
+          mkdir -p docs/evofly-live
+          if [ -s evofly/results/result.json ]; then
+            python evofly/export_live.py \
+              --genome evofly/results/champion.npz \
+              --result evofly/results/result.json \
+              --out docs/evofly-live/champion.json
+            cp evofly/results/result.json docs/evofly-live/latest-result.json
+            cp evofly/results/champion.png docs/evofly-live/latest-champion.png
+          else
+            python evofly/export_live.py \
+              --genome evofly/continuous/champion.npz \
+              --result evofly/continuous/result.json \
+              --out docs/evofly-live/champion.json
+            [ ! -s evofly/state/latest-result.json ] || cp evofly/state/latest-result.json docs/evofly-live/latest-result.json
+            [ ! -s evofly/state/latest-champion.png ] || cp evofly/state/latest-champion.png docs/evofly-live/latest-champion.png
+          fi
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('docs/evofly-live/champion.json').read_text())
+          assert d['n']==96
+          assert len(d['edges'])>0
+          print('LIVE_SNAPSHOT', d['generation'], len(d['edges']))
+          PY
+
+      - name: Persist the surviving genome and live state
         shell: bash
         run: |
           set -euxo pipefail
@@ -134,8 +163,9 @@ jobs:
           [ ! -f evofly/state/latest-result.json ] || git add -f evofly/state/latest-result.json
           [ ! -f evofly/state/latest-evolution.json ] || git add -f evofly/state/latest-evolution.json
           [ ! -f evofly/state/latest-champion.png ] || git add -f evofly/state/latest-champion.png
+          git add -f docs/evofly-live/
           if ! git diff --cached --quiet; then
-            git commit -m "EvoFly surviving genome $GITHUB_RUN_ID [skip ci]"
+            git commit -m "EvoFly surviving genome + live state $GITHUB_RUN_ID [skip ci]"
             git push origin HEAD:evofly-ci
           fi
 
