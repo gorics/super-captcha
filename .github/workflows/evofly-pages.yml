@@ -1,0 +1,37 @@
+name: Deploy EvoFly Live
+
+on:
+  push:
+    branches: [evofly-ci]
+    paths:
+      - 'docs/evofly-live/**'
+      - '.github/workflows/evofly-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: evofly-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout live organism branch
+        uses: actions/checkout@v4
+      - name: Configure Pages
+        uses: actions/configure-pages@v6
+      - name: Upload live site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: docs/evofly-live
+      - name: Deploy live site
+        id: deployment
+        uses: actions/deploy-pages@v4
