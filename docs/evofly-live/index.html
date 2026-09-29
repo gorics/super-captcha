@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>EvoFly Live — FlyWire neuroevolution observer</title>
+<style>
+:root{color-scheme:dark;--bg:#090b10;--panel:#11151d;--line:#263040;--text:#f2f5f8;--muted:#9aa8ba;--accent:#7ce7b3;--warn:#ffd37a}
+*{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 50% -20%,#1a2432 0,#090b10 45%);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;min-height:100vh}
+header{padding:18px max(16px,env(safe-area-inset-left));display:flex;gap:14px;align-items:center;justify-content:space-between;border-bottom:1px solid #202735;background:#090b10dd;backdrop-filter:blur(14px);position:sticky;top:0;z-index:5}
+.brand{display:flex;align-items:center;gap:12px}.orb{width:16px;height:16px;border-radius:50%;background:#7ce7b3;box-shadow:0 0 22px #7ce7b3aa}.title{font-weight:800;font-size:18px;letter-spacing:.2px}.subtitle{font-size:12px;color:var(--muted);margin-top:2px}
+.badges{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.badge{font-size:11px;padding:6px 9px;border:1px solid #2b3648;border-radius:999px;background:#111720;color:#c8d2df}
+main{max-width:1320px;margin:0 auto;padding:16px;display:grid;gap:14px}.controls{display:flex;gap:8px;flex-wrap:wrap}.btn{appearance:none;border:1px solid #324055;background:#151c27;color:#eaf0f7;border-radius:10px;padding:9px 12px;font-weight:700;cursor:pointer}.btn.primary{background:#173328;border-color:#285842}.btn:disabled{opacity:.45;cursor:default}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.card{background:linear-gradient(180deg,#121821,#0e131a);border:1px solid #222c3a;border-radius:16px;overflow:hidden;box-shadow:0 18px 50px #0005}.card h2{font-size:13px;margin:0;padding:11px 13px;border-bottom:1px solid #222c3a;color:#d7e0eb;display:flex;align-items:center;justify-content:space-between}.tiny{font-size:10px;color:var(--muted);font-weight:500}
+.canvas-wrap{position:relative;aspect-ratio:16/10;background:#05070b}.canvas-wrap canvas,.canvas-wrap video,.canvas-wrap img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.canvas-wrap video{opacity:0}.canvas-wrap img{object-fit:contain;background:#06080d}.overlay{position:absolute;left:10px;bottom:10px;padding:5px 8px;border-radius:7px;background:#000a;font:11px ui-monospace,SFMono-Regular,Menlo,monospace;color:#d7e0eb}
+.telemetry{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;padding:10px}.metric{border:1px solid #243044;background:#0b1017;border-radius:10px;padding:8px}.metric b{display:block;font-size:15px}.metric span{font-size:10px;color:var(--muted)}
+.thought{padding:14px 15px 16px;min-height:118px}.thought .label{font-size:11px;color:var(--muted);margin-bottom:7px}.thought .text{font-size:19px;line-height:1.5;font-weight:750;letter-spacing:-.2px}.thought .foot{margin-top:8px;font-size:10px;line-height:1.45;color:#7f8b99}.log{font:11px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:#aebdce;white-space:pre-wrap;max-height:180px;overflow:auto;padding:12px;margin:0}
+.full{grid-column:1/-1}.sd-meta{padding:10px 12px;font-size:11px;color:var(--muted);border-top:1px solid #222c3a}
+@media(max-width:850px){.grid{grid-template-columns:1fr}.telemetry{grid-template-columns:repeat(3,1fr)}.full{grid-column:auto}.badges{display:none}.thought .text{font-size:17px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="orb" id="orb"></div><div><div class="title">EvoFly Live</div><div class="subtitle">FlyWire-derived evolving brain · live sensory/state observer</div></div></div>
+  <div class="badges"><div class="badge" id="genBadge">gen —</div><div class="badge" id="fitBadge">fitness —</div><div class="badge">FAFB v783</div><div class="badge" id="edgeBadge">edges —</div></div>
+</header>
+<main>
+  <div class="controls">
+    <button class="btn primary" id="cameraBtn">카메라로 환경 입력</button>
+    <button class="btn" id="syntheticBtn">가상 환경</button>
+    <button class="btn" id="llmBtn">한국어 LLM 디코더 로드</button>
+    <button class="btn" id="pauseBtn">일시정지</button>
+  </div>
+
+  <section class="grid">
+    <article class="card">
+      <h2>환경 입력 <span class="tiny" id="sourceLabel">synthetic arena</span></h2>
+      <div class="canvas-wrap"><video id="video" playsinline muted></video><canvas id="world"></canvas><div class="overlay" id="fps">0 fps</div></div>
+    </article>
+    <article class="card">
+      <h2>초파리 겹눈 재구성 <span class="tiny">ommatidia-like sampling</span></h2>
+      <div class="canvas-wrap"><canvas id="retina"></canvas><div class="overlay">감각 입력 재구성 ≠ 주관적 경험</div></div>
+    </article>
+    <article class="card">
+      <h2>진화된 뇌 상태 <span class="tiny" id="brainLabel">96 neurons</span></h2>
+      <div class="canvas-wrap"><canvas id="brain"></canvas><div class="overlay" id="activityLabel">mean |a| —</div></div>
+      <div class="telemetry">
+        <div class="metric"><b id="leftV">—</b><span>left luminance</span></div>
+        <div class="metric"><b id="rightV">—</b><span>right luminance</span></div>
+        <div class="metric"><b id="motionV">—</b><span>motion</span></div>
+        <div class="metric"><b id="loomV">—</b><span>looming</span></div>
+        <div class="metric"><b id="novelV">—</b><span>novelty</span></div>
+        <div class="metric"><b id="actV">—</b><span>brain activity</span></div>
+      </div>
+    </article>
+    <article class="card">
+      <h2>한국어 상태 해석 <span class="tiny" id="decoderState">deterministic decoder</span></h2>
+      <div class="thought"><div class="label">LIVE STATE NARRATION</div><div class="text" id="thoughtText">모델을 불러오는 중…</div><div class="foot">이 문장은 신경망/감각 상태를 사람이 읽을 수 있게 변환한 해석이다. 초파리의 의식이나 실제 내적 독백을 측정한 것이 아니다.</div></div>
+      <pre class="log" id="log"></pre>
+    </article>
+    <article class="card full">
+      <h2>Stable Diffusion 융합 기관의 최신 실제 출력 <span class="tiny" id="sdGen">CI generation —</span></h2>
+      <div class="canvas-wrap" style="aspect-ratio:2.2/1"><img id="sdImage" alt="Latest Stable Diffusion fused output" src="latest-champion.png"><div class="overlay">GitHub Actions에서 동일 genome latent가 SD text embedding에 직접 주입된 결과</div></div>
+      <div class="sd-meta" id="sdMeta">loading…</div>
+    </article>
+  </section>
+</main>
+<script type="module">
+const $=id=>document.getElementById(id);
+const world=$('world'), retina=$('retina'), brain=$('brain'), video=$('video');
+const wctx=world.getContext('2d',{willReadFrequently:true}), rctx=retina.getContext('2d'), bctx=brain.getContext('2d');
+let genome=null,state=null,paused=false,useCamera=false,prevGrid=null,lastFpsT=performance.now(),fpsFrames=0,lastNarration=0,llm=null,llmBusy=false,lastLLM=0;
+let synth={x:.2,y:.45,vx:.17,vy:.11,r:.08,t:0};
+const SENSOR={cols:24,rows:16};
+const pos=[]; for(let i=0;i<96;i++){const a=i*2.39996323,r=.12+.78*Math.sqrt((i+.5)/96);pos.push([.5+r*Math.cos(a)*.48,.5+r*Math.sin(a)*.48]);}
+function log(s){const e=$('log');e.textContent=`${new Date().toLocaleTimeString()}  ${s}\n`+e.textContent.slice(0,3000)}
+function resizeCanvas(c){const dpr=Math.min(devicePixelRatio||1,2),r=c.getBoundingClientRect();const W=Math.max(2,Math.floor(r.width*dpr)),H=Math.max(2,Math.floor(r.height*dpr));if(c.width!==W||c.height!==H){c.width=W;c.height=H}return [W,H,dpr]}
+async function loadGenome(){try{const g=await fetch(`champion.json?t=${Date.now()}`,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(r.status);return r.json()}); if(!genome||g.generation!==genome.generation||g.edges.length!==genome.edges.length){genome=g;state=new Float32Array(g.n);$('genBadge').textContent=`gen ${g.generation}`;$('fitBadge').textContent=`fitness ${g.fitness.toFixed(4)}`;$('edgeBadge').textContent=`edges ${g.edges.length}`;$('brainLabel').textContent=`${g.n} neurons · ${g.edges.length} edges`;log(`genome 업데이트: generation ${g.generation}, ${g.edges.length} edges`);} await loadLatestResult();}catch(e){log(`genome 로드 실패: ${e.message}`)}}
+async function loadLatestResult(){try{const d=await fetch(`latest-result.json?t=${Date.now()}`,{cache:'no-store'}).then(r=>r.ok?r.json():null);if(!d)return;$('sdGen').textContent=`CI generation ${d.evolution.champion_generation}`;const f=d.fusion;$('sdMeta').textContent=`LLM: ${f.llm?.model||'—'} · LLM gain ${(f.llm?.brain_gain??0).toFixed(4)} · SD: ${f.stable_diffusion?.model||'—'} · SD gain ${(f.stable_diffusion?.brain_gain??0).toFixed(4)} · last fusion score ${(f.fusion_evolution?.at(-1)?.score??0).toFixed(4)}`;$('sdImage').src=`latest-champion.png?t=${Date.now()}`;}catch{}}
+function syntheticWorld(t){const [W,H]=resizeCanvas(world);synth.t=t/1000;synth.x+=synth.vx/60;synth.y+=synth.vy/60;if(synth.x<.08||synth.x>.92)synth.vx*=-1;if(synth.y<.1||synth.y>.9)synth.vy*=-1;const pulse=.08+.045*(1+Math.sin(synth.t*.7));synth.r=pulse;wctx.fillStyle='#091019';wctx.fillRect(0,0,W,H);const grd=wctx.createRadialGradient(W*.5,H*.45,2,W*.5,H*.45,Math.max(W,H)*.65);grd.addColorStop(0,'#36506c');grd.addColorStop(1,'#06090e');wctx.fillStyle=grd;wctx.fillRect(0,0,W,H);wctx.beginPath();wctx.arc(synth.x*W,synth.y*H,synth.r*Math.min(W,H),0,Math.PI*2);wctx.fillStyle='#f2e6bc';wctx.fill();for(let i=0;i<7;i++){const x=(.13+i*.13+.04*Math.sin(synth.t*.3+i))%1;wctx.fillStyle=`rgba(115,210,160,${.12+i*.015})`;wctx.fillRect(x*W,H*.12,W*.012,H*.75)}}
+function cameraWorld(){const [W,H]=resizeCanvas(world);if(video.readyState>=2){wctx.save();wctx.translate(W,0);wctx.scale(-1,1);wctx.drawImage(video,0,0,W,H);wctx.restore()}}
+function sampleRetina(){const [W,H]=[world.width,world.height];const img=wctx.getImageData(0,0,W,H).data;const C=SENSOR.cols,R=SENSOR.rows,grid=new Float32Array(C*R);for(let y=0;y<R;y++)for(let x=0;x<C;x++){const px=Math.min(W-1,Math.floor((x+.5)/C*W)),py=Math.min(H-1,Math.floor((y+.5)/R*H));const k=(py*W+px)*4;grid[y*C+x]=(img[k]*.2126+img[k+1]*.7152+img[k+2]*.0722)/255}let left=0,right=0,center=0,edge=0,lc=0,rc=0,cc=0,ec=0,motion=0;for(let y=0;y<R;y++)for(let x=0;x<C;x++){const v=grid[y*C+x];if(x<C/2){left+=v;lc++}else{right+=v;rc++}const nx=Math.abs((x+.5)/C-.5),ny=Math.abs((y+.5)/R-.5);if(nx<.18&&ny<.22){center+=v;cc++}if(nx>.34||ny>.34){edge+=v;ec++}if(prevGrid)motion+=Math.abs(v-prevGrid[y*C+x])}left/=lc;right/=rc;center/=cc;edge/=ec;motion/=grid.length;const looming=Math.max(0,(center-edge)*.75+motion*1.7);const novelty=Math.min(1,motion*4+Math.abs(left-right)*.7);prevGrid=grid;return{grid,left,right,center,edge,motion,looming,novelty}}
+function drawRetina(grid){const [W,H]=resizeCanvas(retina),C=SENSOR.cols,R=SENSOR.rows;rctx.fillStyle='#05070b';rctx.fillRect(0,0,W,H);const sx=W/C,sy=H/R,rad=Math.min(sx,sy)*.42;for(let y=0;y<R;y++)for(let x=0;x<C;x++){const v=grid[y*C+x];const xx=(x+.5+(y%2)*.5)*sx,yy=(y+.5)*sy;const q=Math.round(v*255);rctx.beginPath();rctx.arc(xx,yy,rad,0,Math.PI*2);rctx.fillStyle=`rgb(${q},${Math.min(255,q+18)},${Math.min(255,q+9)})`;rctx.fill()}}
+function brainStep(sens){if(!genome||!state)return 0;const n=genome.n,acc=new Float32Array(n);for(const [dst,src,w] of genome.edges)acc[dst]+=state[src]*w;const inp=new Float32Array(n);inp[0]=sens.left*1.8-.9;inp[1]=sens.right*1.8-.9;inp[2]=(sens.center*2-1)*.45;inp[3]=sens.motion*2.8;inp[4]=sens.looming*2.2;inp[5]=(sens.left-sens.right)*.7;inp[6]=sens.novelty*.9;inp[7]=(sens.edge*2-1)*.3;let mean=0;const next=new Float32Array(n);for(let i=0;i<n;i++){next[i]=Math.tanh(state[i]*genome.leak[i]+acc[i]+inp[i]-genome.threshold[i]);mean+=Math.abs(next[i])}state=next;return mean/n}
+function drawBrain(){if(!state||!genome)return;const [W,H]=resizeCanvas(brain);bctx.fillStyle='#070a0f';bctx.fillRect(0,0,W,H);const edges=genome.edges.slice().sort((a,b)=>Math.abs(b[2])-Math.abs(a[2])).slice(0,360);bctx.lineWidth=1;for(const [d,s,w] of edges){const [x1,y1]=pos[s],[x2,y2]=pos[d];const a=Math.min(.28,.035+Math.abs(w)*.08);bctx.strokeStyle=w>=0?`rgba(124,231,179,${a})`:`rgba(255,142,164,${a})`;bctx.beginPath();bctx.moveTo(x1*W,y1*H);bctx.lineTo(x2*W,y2*H);bctx.stroke()}for(let i=0;i<state.length;i++){const [x,y]=pos[i],v=state[i],m=Math.abs(v);bctx.beginPath();bctx.arc(x*W,y*H,2.5+5*m,0,Math.PI*2);bctx.fillStyle=v>=0?`rgba(124,231,179,${.25+.75*m})`:`rgba(255,142,164,${.25+.75*m})`;bctx.fill()}}
+function deterministicKorean(sens,activity){const side=Math.abs(sens.left-sens.right)<.04?'좌우 밝기 차이가 작다':sens.left>sens.right?'왼쪽 시야가 더 밝다':'오른쪽 시야가 더 밝다';const motion=sens.motion>.09?'빠른 변화가 감지된다':sens.motion>.035?'움직임이 감지된다':'시야 변화는 작다';const loom=sens.looming>.16?'중앙의 접근성 자극이 강하다':sens.looming>.07?'중앙 접근 신호가 약하게 증가한다':'뚜렷한 접근 신호는 없다';const ar=activity>.6?'신경 활동이 매우 높다':activity>.35?'신경 활동이 중간 수준이다':'신경 활동이 낮다';return `${side}. ${motion}. ${loom}. ${ar}.`;}
+function topState(){if(!state)return[];return Array.from(state).map((v,i)=>[i,v]).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1])).slice(0,8)}
+async function loadLLM(){if(llm)return;const btn=$('llmBtn');btn.disabled=true;btn.textContent='LLM 다운로드 중…';try{const {pipeline}=await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1');const device=('gpu' in navigator)?'webgpu':'wasm';llm=await pipeline('text-generation','onnx-community/Qwen2.5-0.5B-Instruct',{dtype:'q4',device});$('decoderState').textContent=`Qwen2.5-0.5B q4 · ${device}`;btn.textContent='한국어 LLM 디코더 활성';log(`브라우저 LLM 로드 완료 (${device})`);}catch(e){btn.disabled=false;btn.textContent='LLM 다시 시도';log(`LLM 로드 실패: ${e.message}`)}}
+async function narrateLLM(sens,activity,now){if(!llm||llmBusy||now-lastLLM<7000)return;llmBusy=true;lastLLM=now;try{const top=topState().map(([i,v])=>`${i}:${v.toFixed(2)}`).join(', ');const messages=[{role:'system',content:'너는 초파리-신경망 실험의 상태 디코더다. 의식이나 실제 생각을 주장하지 말고, 주어진 센서와 신경활동을 1개의 짧은 한국어 문장으로만 기술한다.'},{role:'user',content:`generation=${genome.generation}, left=${sens.left.toFixed(2)}, right=${sens.right.toFixed(2)}, motion=${sens.motion.toFixed(3)}, looming=${sens.looming.toFixed(3)}, novelty=${sens.novelty.toFixed(3)}, mean_activity=${activity.toFixed(3)}, top_neurons=${top}`}];const out=await llm(messages,{max_new_tokens:42,do_sample:false});const text=out?.[0]?.generated_text?.at(-1)?.content?.trim();if(text)$('thoughtText').textContent=text;}catch(e){log(`LLM 추론 실패: ${e.message}`)}finally{llmBusy=false}}
+async function startCamera(){try{const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});video.srcObject=stream;await video.play();useCamera=true;$('sourceLabel').textContent='live camera';$('cameraBtn').textContent='카메라 입력 중';log('카메라 환경 입력 시작')}catch(e){log(`카메라 사용 실패: ${e.message}`)}}
+function setMetrics(s,a){$('leftV').textContent=s.left.toFixed(2);$('rightV').textContent=s.right.toFixed(2);$('motionV').textContent=s.motion.toFixed(3);$('loomV').textContent=s.looming.toFixed(3);$('novelV').textContent=s.novelty.toFixed(3);$('actV').textContent=a.toFixed(3);$('activityLabel').textContent=`mean |a| ${a.toFixed(3)}`}
+function loop(t){requestAnimationFrame(loop);if(paused||!genome)return;if(useCamera)cameraWorld();else syntheticWorld(t);const sens=sampleRetina();drawRetina(sens.grid);const a=brainStep(sens);drawBrain();setMetrics(sens,a);if(t-lastNarration>550){if(!llm)$('thoughtText').textContent=deterministicKorean(sens,a);lastNarration=t}narrateLLM(sens,a,t);fpsFrames++;if(t-lastFpsT>1000){$('fps').textContent=`${fpsFrames} fps`;fpsFrames=0;lastFpsT=t}}
+$('cameraBtn').onclick=startCamera;$('syntheticBtn').onclick=()=>{useCamera=false;$('sourceLabel').textContent='synthetic arena';log('가상 환경으로 전환')};$('llmBtn').onclick=loadLLM;$('pauseBtn').onclick=()=>{paused=!paused;$('pauseBtn').textContent=paused?'재개':'일시정지'};
+await loadGenome();setInterval(loadGenome,15000);requestAnimationFrame(loop);
+</script>
+</body>
+</html>
