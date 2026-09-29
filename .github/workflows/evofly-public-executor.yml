@@ -1,0 +1,155 @@
+name: EvoFly real continuous neuroevolution
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/evofly-public-executor.yml']
+  workflow_dispatch:
+  schedule:
+    - cron: '*/5 * * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: evofly-real-continuous
+  cancel-in-progress: false
+
+jobs:
+  evolve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      PYTHONUNBUFFERED: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      HF_HUB_DISABLE_XET: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - name: Check out executable organism branch
+        uses: actions/checkout@v4
+        with:
+          ref: evofly-ci
+          fetch-depth: 0
+
+      - name: Fetch exact real FlyWire v783 whole-brain data
+        shell: bash
+        run: |
+          set -euxo pipefail
+          rm -rf upstream-fruit-fly-lab
+          git clone --filter=blob:none https://github.com/vaibhavkedarisetti/fruit-fly-lab.git upstream-fruit-fly-lab
+          cd upstream-fruit-fly-lab
+          git checkout --detach 26672e06427c12c61536ce1bd93dae7442944681
+          git checkout HEAD -- web/data/connectome.bin
+          test -s web/data/connectome.bin
+          test "$(stat -c%s web/data/connectome.bin)" = "22951784"
+
+      - name: Install structural evolution runtime
+        run: python -m pip install --quiet numpy
+
+      - name: Continue brain-structure evolution every five minutes
+        if: github.event_name == 'schedule'
+        shell: bash
+        run: |
+          set -euxo pipefail
+          rm -rf evofly/continuous
+          mkdir -p evofly/continuous evofly/state
+          RESUME=()
+          if [ -s evofly/state/champion.npz ]; then RESUME=(--resume evofly/state/champion.npz); fi
+          python evofly/evolve.py \
+            --connectome upstream-fruit-fly-lab/web/data/connectome.bin \
+            --out evofly/continuous --nodes 96 --generations 20 --population 12 \
+            --skip-foundation "${RESUME[@]}" | tee evofly/continuous/stdout.log
+          cp evofly/continuous/champion.npz evofly/state/champion.npz
+          cp evofly/continuous/result.json evofly/state/latest-evolution.json
+
+      - name: Install open foundation-model organs
+        if: github.event_name != 'schedule'
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install --quiet torch --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --quiet 'transformers==4.46.3' 'diffusers==0.31.0' 'accelerate==1.1.1' safetensors sentencepiece pillow
+
+      - name: Run actual fused FlyWire + LLM + Stable Diffusion organism
+        if: github.event_name != 'schedule'
+        shell: bash
+        run: |
+          set -euxo pipefail
+          rm -rf evofly/results
+          mkdir -p evofly/results evofly/state
+          RESUME=()
+          if [ -s evofly/state/champion.npz ]; then RESUME=(--resume evofly/state/champion.npz); fi
+          python evofly/evolve.py \
+            --connectome upstream-fruit-fly-lab/web/data/connectome.bin \
+            --out evofly/results --nodes 96 --generations 8 --population 8 \
+            --llm HuggingFaceTB/SmolLM2-135M-Instruct \
+            --sd segmind/tiny-sd "${RESUME[@]}" | tee evofly/results/stdout.log
+          test -s evofly/results/result.json
+          test -s evofly/results/champion.npz
+          test -s evofly/results/champion.png
+          cp evofly/results/champion.npz evofly/state/champion.npz
+          cp evofly/results/result.json evofly/state/latest-result.json
+          cp evofly/results/champion.png evofly/state/latest-champion.png
+
+      - name: Validate real source and fusion outputs
+        if: github.event_name != 'schedule'
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('evofly/results/result.json').read_text())
+          assert d['source']['neurons']==139255
+          assert d['source']['connections']==3732460
+          assert d['source']['synapses']==50666648
+          assert d['source']['sampled_real_edges']>0
+          assert d['fusion']['llm']['embedding_dim']>0
+          assert d['fusion']['stable_diffusion']['prompt_embedding_dim']>0
+          assert len(d['fusion']['fusion_evolution'])==2
+          assert Path('evofly/results/champion.png').stat().st_size>1000
+          print('VALIDATED_RESULT')
+          print(json.dumps({
+            'seed_fitness':d['evolution']['seed_fitness'],
+            'champion_fitness':d['evolution']['champion_fitness'],
+            'fitness_delta':d['evolution']['fitness_delta'],
+            'sampled_real_edges':d['source']['sampled_real_edges'],
+            'llm_text':d['fusion']['llm']['text'],
+            'llm_feedback':d['fusion']['llm']['feedback_to_brain'],
+            'sd_feedback':d['fusion']['stable_diffusion']['feedback_to_brain'],
+            'png_bytes':Path('evofly/results/champion.png').stat().st_size
+          },indent=2))
+          PY
+
+      - name: Persist the surviving genome for the next generation
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git config user.name 'evofly-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -f evofly/state/champion.npz
+          [ ! -f evofly/state/latest-result.json ] || git add -f evofly/state/latest-result.json
+          [ ! -f evofly/state/latest-evolution.json ] || git add -f evofly/state/latest-evolution.json
+          [ ! -f evofly/state/latest-champion.png ] || git add -f evofly/state/latest-champion.png
+          if ! git diff --cached --quiet; then
+            git commit -m "EvoFly surviving genome $GITHUB_RUN_ID [skip ci]"
+            git push origin HEAD:evofly-ci
+          fi
+
+      - name: Upload full actual result
+        if: github.event_name != 'schedule'
+        uses: actions/upload-artifact@v4
+        with:
+          name: evofly-real-${{ github.run_id }}
+          retention-days: 30
+          if-no-files-found: error
+          path: evofly/results/
+
+      - name: Upload continuous evolution trace
+        if: github.event_name == 'schedule'
+        uses: actions/upload-artifact@v4
+        with:
+          name: evofly-evolution-${{ github.run_id }}
+          retention-days: 7
+          if-no-files-found: error
+          path: evofly/continuous/
