@@ -22,9 +22,9 @@ jobs:
     timeout-minutes: 120
     env:
       PYTHONUNBUFFERED: '1'
-      HF_HUB_DISABLE_TELEMETRY: '1'
-      HF_HUB_DISABLE_XET: '1'
-      TOKENIZERS_PARALLELISM: 'false'
+      HF_HUB_DISABLE_TELEMETRY: 1
+      HF_HUB_DISABLE_XET: 1
+      TOKENIZERS_PARALLELISM: false
     steps:
       - name: Check out executable organism branch
         uses: actions/checkout@v4
@@ -166,6 +166,8 @@ jobs:
           git add -f docs/evofly-live/
           if ! git diff --cached --quiet; then
             git commit -m "EvoFly surviving genome + live state $GITHUB_RUN_ID [skip ci]"
+            git fetch origin evofly-ci
+            git rebase origin/evofly-ci
             git push origin HEAD:evofly-ci
           fi
 
