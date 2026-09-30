@@ -2,6 +2,11 @@ name: Deploy EvoFly Live
 
 on:
   workflow_dispatch:
+  push:
+    branches: [evofly-ci]
+    paths:
+      - 'docs/evofly-live/**'
+      - '.github/workflows/evofly-pages.yml'
 
 permissions:
   contents: read
@@ -21,8 +26,10 @@ jobs:
     steps:
       - name: Checkout live organism branch
         uses: actions/checkout@v4
-      - name: Configure Pages
+      - name: Configure or enable Pages
         uses: actions/configure-pages@v6
+        with:
+          enablement: true
       - name: Upload live site
         uses: actions/upload-pages-artifact@v4
         with:
