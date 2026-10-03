@@ -109,155 +109,161 @@
   "evolution": {
     "generations_this_run": 8,
     "population": 8,
-    "seed_generation": 511,
-    "champion_generation": 521,
-    "seed_fitness": 2.3321473513768782,
-    "champion_fitness": 2.328170471084858,
-    "fitness_delta": -0.003976880292020368,
+    "seed_generation": 541,
+    "champion_generation": 550,
+    "seed_fitness": 2.278515520834012,
+    "champion_fitness": 2.363372568240378,
+    "fitness_delta": 0.0848570474063659,
     "seed_metrics": {
-      "xor_accuracy": 0.5,
+      "xor_accuracy": 0.5390625,
       "memory_accuracy": 1.0,
-      "mse": 0.2854234278202057,
-      "edges": 8422,
-      "fusion_prior": 0.0358476889193058
+      "mse": 0.35475361347198486,
+      "edges": 8408,
+      "fusion_prior": 0.03589066208377481
     },
     "champion_metrics": {
-      "xor_accuracy": 0.515625,
+      "xor_accuracy": 0.5703125,
       "memory_accuracy": 1.0,
-      "mse": 0.2952331304550171,
-      "edges": 8414,
-      "fusion_prior": 0.03541315015098611
+      "mse": 0.28378310799598694,
+      "edges": 8426,
+      "fusion_prior": 0.037316266514143034
     },
     "history": [
       {
-        "generation": 512,
-        "fitness": 2.3321473513768782,
-        "xor_accuracy": 0.5,
+        "generation": 542,
+        "fitness": 2.3447748877796544,
+        "xor_accuracy": 0.5703125,
         "memory_accuracy": 1.0,
-        "mse": 0.2854234278202057,
-        "edges": 8422,
-        "fusion_prior": 0.0358476889193058,
-        "uid": "resumed",
-        "llm_gain": 0.10043584555387497,
-        "sd_gain": 0.28717970848083496,
+        "mse": 0.30119824409484863,
+        "edges": 8408,
+        "fusion_prior": 0.03609465965228117,
+        "uid": "g00542-003",
+        "llm_gain": 0.005,
+        "sd_gain": 0.18026701738594172,
         "winning_mutations": [
-          "elite"
-        ]
-      },
-      {
-        "generation": 513,
-        "fitness": 2.3607531880067456,
-        "xor_accuracy": 0.546875,
-        "memory_accuracy": 1.0,
-        "mse": 0.27556759119033813,
-        "edges": 8422,
-        "fusion_prior": 0.0358476889193058,
-        "uid": "resumed",
-        "llm_gain": 0.10043584555387497,
-        "sd_gain": 0.28717970848083496,
-        "winning_mutations": [
-          "elite"
-        ]
-      },
-      {
-        "generation": 514,
-        "fitness": 2.358808115594255,
-        "xor_accuracy": 0.5234375,
-        "memory_accuracy": 1.0,
-        "mse": 0.268137663602829,
-        "edges": 8422,
-        "fusion_prior": 0.0358476889193058,
-        "uid": "resumed",
-        "llm_gain": 0.10043584555387497,
-        "sd_gain": 0.28717970848083496,
-        "winning_mutations": [
-          "elite"
-        ]
-      },
-      {
-        "generation": 515,
-        "fitness": 2.329896411769258,
-        "xor_accuracy": 0.5,
-        "memory_accuracy": 1.0,
-        "mse": 0.2876743674278259,
-        "edges": 8422,
-        "fusion_prior": 0.0358476889193058,
-        "uid": "resumed",
-        "llm_gain": 0.10043584555387497,
-        "sd_gain": 0.28717970848083496,
-        "winning_mutations": [
-          "elite"
-        ]
-      },
-      {
-        "generation": 516,
-        "fitness": 2.3390478977474176,
-        "xor_accuracy": 0.5390625,
-        "memory_accuracy": 1.0,
-        "mse": 0.29361262917518616,
-        "edges": 8420,
-        "fusion_prior": 0.03530809636704828,
-        "uid": "g00516-001",
-        "llm_gain": 0.07468982471305147,
-        "sd_gain": 0.2892850063606376,
-        "winning_mutations": [
-          "delete",
           "add",
           "rewire",
-          "add"
-        ]
-      },
-      {
-        "generation": 517,
-        "fitness": 2.3574003902709366,
-        "xor_accuracy": 0.546875,
-        "memory_accuracy": 1.0,
-        "mse": 0.2778681814670563,
-        "edges": 8420,
-        "fusion_prior": 0.034791141182437355,
-        "uid": "g00517-001",
-        "llm_gain": 0.0625534125920881,
-        "sd_gain": 0.3029963534702207,
-        "winning_mutations": [
-          "add",
-          "add",
-          "add",
-          "add"
-        ]
-      },
-      {
-        "generation": 518,
-        "fitness": 2.3420964421056225,
-        "xor_accuracy": 0.5234375,
-        "memory_accuracy": 1.0,
-        "mse": 0.28389060497283936,
-        "edges": 8419,
-        "fusion_prior": 0.03488244638401733,
-        "uid": "g00518-005",
-        "llm_gain": 0.04453876254426794,
-        "sd_gain": 0.28041644334340177,
-        "winning_mutations": [
-          "delete",
-          "add",
-          "rewire",
+          "duplicate",
           "rewire"
         ]
       },
       {
-        "generation": 519,
-        "fitness": 2.315345964640654,
+        "generation": 543,
+        "fitness": 2.2926545802266762,
         "xor_accuracy": 0.5078125,
         "memory_accuracy": 1.0,
-        "mse": 0.3048943281173706,
-        "edges": 8415,
-        "fusion_prior": 0.03537701150802451,
-        "uid": "g00519-006",
-        "llm_gain": 0.04856985873707921,
-        "sd_gain": 0.25971928333585376,
+        "mse": 0.32929807901382446,
+        "edges": 8420,
+        "fusion_prior": 0.03710022868494518,
+        "uid": "g00543-003",
+        "llm_gain": 0.045452828590196385,
+        "sd_gain": 0.17044139434293742,
         "winning_mutations": [
           "delete",
           "delete",
+          "duplicate",
+          "add"
+        ]
+      },
+      {
+        "generation": 544,
+        "fitness": 2.312304679087269,
+        "xor_accuracy": 0.4921875,
+        "memory_accuracy": 1.0,
+        "mse": 0.3030146062374115,
+        "edges": 8427,
+        "fusion_prior": 0.03673204574134731,
+        "uid": "g00544-002",
+        "llm_gain": 0.02164800552134968,
+        "sd_gain": 0.16504571845398439,
+        "winning_mutations": [
+          "duplicate",
+          "add",
           "rewire",
+          "duplicate"
+        ]
+      },
+      {
+        "generation": 545,
+        "fitness": 2.308640608719456,
+        "xor_accuracy": 0.5078125,
+        "memory_accuracy": 1.0,
+        "mse": 0.3129286766052246,
+        "edges": 8427,
+        "fusion_prior": 0.03673204574134731,
+        "uid": "g00544-002",
+        "llm_gain": 0.02164800552134968,
+        "sd_gain": 0.16504571845398439,
+        "winning_mutations": [
+          "elite"
+        ]
+      },
+      {
+        "generation": 546,
+        "fitness": 2.2853586947237137,
+        "xor_accuracy": 0.4765625,
+        "memory_accuracy": 1.0,
+        "mse": 0.3237105906009674,
+        "edges": 8427,
+        "fusion_prior": 0.03673204574134731,
+        "uid": "g00544-002",
+        "llm_gain": 0.02164800552134968,
+        "sd_gain": 0.16504571845398439,
+        "winning_mutations": [
+          "elite"
+        ]
+      },
+      {
+        "generation": 547,
+        "fitness": 2.2628178437369497,
+        "xor_accuracy": 0.5625,
+        "memory_accuracy": 0.9375,
+        "mse": 0.35577040910720825,
+        "edges": 8431,
+        "fusion_prior": 0.03688469381637986,
+        "uid": "g00547-004",
+        "llm_gain": 0.030800699557008662,
+        "sd_gain": 0.1665660087380154,
+        "winning_mutations": [
+          "delete",
+          "delete",
+          "duplicate",
+          "add"
+        ]
+      },
+      {
+        "generation": 548,
+        "fitness": 2.230740343033024,
+        "xor_accuracy": 0.46875,
+        "memory_accuracy": 0.9921875,
+        "mse": 0.37252622842788696,
+        "edges": 8429,
+        "fusion_prior": 0.037183672155355535,
+        "uid": "g00548-001",
+        "llm_gain": 0.05270909548486173,
+        "sd_gain": 0.17352548771708484,
+        "winning_mutations": [
+          "rewire",
+          "rewire",
+          "delete",
+          "add"
+        ]
+      },
+      {
+        "generation": 549,
+        "fitness": 2.3609124110175332,
+        "xor_accuracy": 0.5703125,
+        "memory_accuracy": 1.0,
+        "mse": 0.2862247824668884,
+        "edges": 8428,
+        "fusion_prior": 0.03730212403997717,
+        "uid": "g00549-001",
+        "llm_gain": 0.048478694567999775,
+        "sd_gain": 0.1633724925691411,
+        "winning_mutations": [
+          "delete",
+          "duplicate",
+          "delete",
           "delete"
         ]
       }
@@ -267,38 +273,38 @@
     "llm": {
       "model": "HuggingFaceTB/SmolLM2-135M-Instruct",
       "text": "The fruit fly connectome is a computational organism that",
-      "feedback_to_brain": -0.02241881493133802,
-      "brain_gain": 0.04843083873628106,
+      "feedback_to_brain": -0.018612711449736148,
+      "brain_gain": 0.04882673121472741,
       "embedding_dim": 576
     },
     "stable_diffusion": {
       "model": "segmind/tiny-sd",
       "image": "evofly/results/champion.png",
-      "feedback_to_brain": -0.01230949442833662,
-      "brain_gain": 0.2577733311869756,
+      "feedback_to_brain": -0.012189819477498531,
+      "brain_gain": 0.16301340550757584,
       "prompt_embedding_dim": 768
     },
     "fusion_evolution": [
       {
         "round": 1,
-        "score": 2.347698712261962,
-        "llm_feedback": 0.044232625514268875,
-        "sd_feedback": -0.009229931980371475,
-        "uid": "fusion-r0-1",
-        "llm_gain": 0.04808280208955343,
-        "sd_gain": 0.25813241824854083
+        "score": 2.3962695003254377,
+        "llm_feedback": 0.0481688529253006,
+        "sd_feedback": -0.008991606533527374,
+        "uid": "g00549-001",
+        "llm_gain": 0.048478694567999775,
+        "sd_gain": 0.1633724925691411
       },
       {
         "round": 2,
-        "score": 2.3550741557873733,
-        "llm_feedback": 0.04428048059344292,
-        "sd_feedback": -0.0092228464782238,
+        "score": 2.4136436534475423,
+        "llm_feedback": 0.0482223704457283,
+        "sd_feedback": -0.008994575589895248,
         "uid": "fusion-r1-0",
-        "llm_gain": 0.04843083873628106,
-        "sd_gain": 0.2577733311869756
+        "llm_gain": 0.04882673121472741,
+        "sd_gain": 0.16301340550757584
       }
     ],
     "architecture": "One phenotype: evolved recurrent FlyWire-derived brain state directly perturbs LLM token embeddings and Stable Diffusion text embeddings; hidden/UNet activations are evaluated as feedback during coupling selection."
   },
-  "runtime_seconds": 24.648765087127686
+  "runtime_seconds": 22.939908266067505
 }
