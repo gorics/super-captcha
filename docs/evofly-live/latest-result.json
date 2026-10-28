@@ -109,8 +109,8 @@
   "evolution": {
     "generations_this_run": 8,
     "population": 8,
-    "seed_generation": 4599,
-    "champion_generation": 4607,
+    "seed_generation": 4627,
+    "champion_generation": 4635,
     "seed_fitness": 2.3374131295108134,
     "champion_fitness": 2.3374131295108134,
     "fitness_delta": 0.0,
@@ -130,7 +130,7 @@
     },
     "history": [
       {
-        "generation": 4600,
+        "generation": 4628,
         "fitness": 2.3374131295108134,
         "xor_accuracy": 0.5,
         "memory_accuracy": 1.0,
@@ -145,7 +145,7 @@
         ]
       },
       {
-        "generation": 4601,
+        "generation": 4629,
         "fitness": 2.347499451341563,
         "xor_accuracy": 0.484375,
         "memory_accuracy": 1.0,
@@ -160,7 +160,7 @@
         ]
       },
       {
-        "generation": 4602,
+        "generation": 4630,
         "fitness": 2.356782427730494,
         "xor_accuracy": 0.5234375,
         "memory_accuracy": 1.0,
@@ -175,7 +175,7 @@
         ]
       },
       {
-        "generation": 4603,
+        "generation": 4631,
         "fitness": 2.296198216381007,
         "xor_accuracy": 0.421875,
         "memory_accuracy": 1.0,
@@ -190,7 +190,7 @@
         ]
       },
       {
-        "generation": 4604,
+        "generation": 4632,
         "fitness": 2.334683993759089,
         "xor_accuracy": 0.4921875,
         "memory_accuracy": 1.0,
@@ -205,7 +205,7 @@
         ]
       },
       {
-        "generation": 4605,
+        "generation": 4633,
         "fitness": 2.3603890869044597,
         "xor_accuracy": 0.515625,
         "memory_accuracy": 1.0,
@@ -220,7 +220,7 @@
         ]
       },
       {
-        "generation": 4606,
+        "generation": 4634,
         "fitness": 2.3602158221625618,
         "xor_accuracy": 0.53125,
         "memory_accuracy": 1.0,
@@ -235,7 +235,7 @@
         ]
       },
       {
-        "generation": 4607,
+        "generation": 4635,
         "fitness": 2.3374131295108134,
         "xor_accuracy": 0.5,
         "memory_accuracy": 1.0,
@@ -288,5 +288,5 @@
     ],
     "architecture": "One phenotype: evolved recurrent FlyWire-derived brain state directly perturbs LLM token embeddings and Stable Diffusion text embeddings; hidden/UNet activations are evaluated as feedback during coupling selection."
   },
-  "runtime_seconds": 17.614046573638916
+  "runtime_seconds": 18.28636908531189
 }
