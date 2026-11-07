@@ -109,8 +109,8 @@
   "evolution": {
     "generations_this_run": 20,
     "population": 12,
-    "seed_generation": 5831,
-    "champion_generation": 5851,
+    "seed_generation": 5859,
+    "champion_generation": 5879,
     "seed_fitness": 2.3374131295108134,
     "champion_fitness": 2.3374131295108134,
     "fitness_delta": 0.0,
@@ -130,7 +130,7 @@
     },
     "history": [
       {
-        "generation": 5832,
+        "generation": 5860,
         "fitness": 2.3374131295108134,
         "xor_accuracy": 0.5,
         "memory_accuracy": 1.0,
@@ -145,7 +145,7 @@
         ]
       },
       {
-        "generation": 5833,
+        "generation": 5861,
         "fitness": 2.347499451341563,
         "xor_accuracy": 0.484375,
         "memory_accuracy": 1.0,
@@ -160,7 +160,7 @@
         ]
       },
       {
-        "generation": 5834,
+        "generation": 5862,
         "fitness": 2.356782427730494,
         "xor_accuracy": 0.5234375,
         "memory_accuracy": 1.0,
@@ -175,7 +175,7 @@
         ]
       },
       {
-        "generation": 5835,
+        "generation": 5863,
         "fitness": 2.296198216381007,
         "xor_accuracy": 0.421875,
         "memory_accuracy": 1.0,
@@ -190,7 +190,7 @@
         ]
       },
       {
-        "generation": 5836,
+        "generation": 5864,
         "fitness": 2.334683993759089,
         "xor_accuracy": 0.4921875,
         "memory_accuracy": 1.0,
@@ -205,7 +205,7 @@
         ]
       },
       {
-        "generation": 5837,
+        "generation": 5865,
         "fitness": 2.3603890869044597,
         "xor_accuracy": 0.515625,
         "memory_accuracy": 1.0,
@@ -220,7 +220,7 @@
         ]
       },
       {
-        "generation": 5838,
+        "generation": 5866,
         "fitness": 2.3602158221625618,
         "xor_accuracy": 0.53125,
         "memory_accuracy": 1.0,
@@ -235,7 +235,7 @@
         ]
       },
       {
-        "generation": 5839,
+        "generation": 5867,
         "fitness": 2.3374131295108134,
         "xor_accuracy": 0.5,
         "memory_accuracy": 1.0,
@@ -250,7 +250,7 @@
         ]
       },
       {
-        "generation": 5840,
+        "generation": 5868,
         "fitness": 2.347499451341563,
         "xor_accuracy": 0.484375,
         "memory_accuracy": 1.0,
@@ -265,7 +265,7 @@
         ]
       },
       {
-        "generation": 5841,
+        "generation": 5869,
         "fitness": 2.356782427730494,
         "xor_accuracy": 0.5234375,
         "memory_accuracy": 1.0,
@@ -280,7 +280,7 @@
         ]
       },
       {
-        "generation": 5842,
+        "generation": 5870,
         "fitness": 2.296198216381007,
         "xor_accuracy": 0.421875,
         "memory_accuracy": 1.0,
@@ -295,7 +295,7 @@
         ]
       },
       {
-        "generation": 5843,
+        "generation": 5871,
         "fitness": 2.334683993759089,
         "xor_accuracy": 0.4921875,
         "memory_accuracy": 1.0,
@@ -310,7 +310,7 @@
         ]
       },
       {
-        "generation": 5844,
+        "generation": 5872,
         "fitness": 2.3603890869044597,
         "xor_accuracy": 0.515625,
         "memory_accuracy": 1.0,
@@ -325,7 +325,7 @@
         ]
       },
       {
-        "generation": 5845,
+        "generation": 5873,
         "fitness": 2.3602158221625618,
         "xor_accuracy": 0.53125,
         "memory_accuracy": 1.0,
@@ -340,7 +340,7 @@
         ]
       },
       {
-        "generation": 5846,
+        "generation": 5874,
         "fitness": 2.3374131295108134,
         "xor_accuracy": 0.5,
         "memory_accuracy": 1.0,
@@ -355,7 +355,7 @@
         ]
       },
       {
-        "generation": 5847,
+        "generation": 5875,
         "fitness": 2.347499451341563,
         "xor_accuracy": 0.484375,
         "memory_accuracy": 1.0,
@@ -370,7 +370,7 @@
         ]
       },
       {
-        "generation": 5848,
+        "generation": 5876,
         "fitness": 2.356782427730494,
         "xor_accuracy": 0.5234375,
         "memory_accuracy": 1.0,
@@ -385,7 +385,7 @@
         ]
       },
       {
-        "generation": 5849,
+        "generation": 5877,
         "fitness": 2.296198216381007,
         "xor_accuracy": 0.421875,
         "memory_accuracy": 1.0,
@@ -400,7 +400,7 @@
         ]
       },
       {
-        "generation": 5850,
+        "generation": 5878,
         "fitness": 2.334683993759089,
         "xor_accuracy": 0.4921875,
         "memory_accuracy": 1.0,
@@ -415,7 +415,7 @@
         ]
       },
       {
-        "generation": 5851,
+        "generation": 5879,
         "fitness": 2.3603890869044597,
         "xor_accuracy": 0.515625,
         "memory_accuracy": 1.0,
@@ -437,5 +437,5 @@
     "fusion_evolution": [],
     "architecture": "One phenotype: evolved recurrent FlyWire-derived brain state directly perturbs LLM token embeddings and Stable Diffusion text embeddings; hidden/UNet activations are evaluated as feedback during coupling selection."
   },
-  "runtime_seconds": 0.31624579429626465
+  "runtime_seconds": 0.2769644260406494
 }
